@@ -2,8 +2,6 @@
 //https://console.firebase.google.com/u/1/project/train-scheduler-5e7e0/database/train-scheduler-5e7e0/data
 
 
-
-
   // Initialize Firebase
   var config = {
     apiKey: "AIzaSyBntwWsWr4bjLvHgru9FHsAxpl2TW40osM",
@@ -30,12 +28,14 @@
     //grabs user input 
     addTrain = $("#add-train").val().trim();
     destination = $("#destination").val().trim();
-    firstTrain = moment($("#first-train").val().trim(), "hh:mm").subtract(1, "years").format("x");
-    frequency = $("#frequency").val().trim();
+    //firstTrain = moment($("#first-train").val().trim(), "hh:mm").subtract(1, "years").format("x");
+    firstTrain = $("#first-train").val().trim();
+    frequency = $("#frequency").val().trim(); 
 
     //current time
-    var currentTime = moment();
-    console.log("Current Time: " + moment(currentTime).format("hh:mm"));
+    //var currentTime = moment();
+    //console.log(currentTime);
+    //console.log("Current Time: " + moment(currentTime).format("hh:mm"));
 
     console.log(addTrain);
 
@@ -49,43 +49,59 @@
     };
 
        //code for push to firebase
-      dataRef.ref().push({
-      });
+      dataRef.ref().push(newTrain);
   
       //clears elements
-      $("#add-train").val("");
-      $("destination").val("");
-      $("#frequency").val("");
+      $("#add-train").val("")
+      $("#destination").val("")
+      $("#first-train").val("")
+      $("#frequency").val("")
 
       //why is return false needed?
-      return false;
+      //return false;
   
   //end of onclick function 
   });
 
 
-  //firebase watcher + initial loader 
+  //firebase watcher + initial loader  -- similar functionality to on.("click")
+  //dataRef - firebase object 
   dataRef.ref().on("child_added", function(childSnapshot) {
-  console.log(childSnapshot.val().addTrain);
-  console.log(childSnapshot.val().destination);
-  console.log(childSnapshot.val().firstTrain);
-  console.log(childSnapshot.val().frequency);
+  // console.log(childSnapshot.val().addTrain);
+  // console.log(childSnapshot.val().destination);
+  // console.log(childSnapshot.val().firstTrain);
+  // console.log(childSnapshot.val().frequency);
+  
+  var fAddTrain = childSnapshot.val().addTrain;
+  var fDestination = childSnapshot.val().destination;
+  var fFirstTrain = childSnapshot.val().firstTrain;
+  var fFrequency = childSnapshot.val().frequency;
 
+    console.log("fAddTrain", fAddTrain)
+    console.log("fFrequency", fFrequency);
+    console.log("fDestination", fDestination);
+    console.log("fFirstTrain", fFirstTrain);
 
   //calculate difference between trains ****
-  var difference = moment().diff(moment(firstTrain), "minutes");
+  var difference = moment().diff(moment(fFirstTrain), "minutes");
+  console.log("difference", difference)
 
-  //time apart(remainder)
-  var trainRemain = difference % frequency;
+  //time apart(remainder) - next train 
+  //run if frequency greater than zero --- validator 
+
+  var trainRemain = difference % fFrequency;
+  // console.log("train remain", trainRemain);
+  // console.log("frequency", frequency);
 
   //minutes until arrival
-  var minUntil = frequency - trainRemain;
+  var minUntil = fFrequency - trainRemain;
+  //console.log("minutes until", minUntil);
 
   //next train arrival
   var nextArrival = moment().add(minUntil, "minutes").format('hh:mm');
   
   //adding new train to table
-  $("#trainTable").append("<tr><td>" + addTrain + "</td><td>" + destination + "</td><td>" + frequency + "</td><td>" + nextArrival + "</td><td>" + minUntil + "/td></tr>");
+  $("#trainTable").append("<tr><td>" + fAddTrain + "</td><td>" + fDestination + "</td><td>" + fFrequency + "</td><td>" + nextArrival + "</td><td>" + minUntil + "</td></tr>");
 
 
   });
