@@ -4,9 +4,9 @@ Front-end train schedule application that accepts user input to add new train na
 
 # Technology
 
--Javascript
--jQuery
--HTML5
--CSS3
--Firebase
--Moment.js
+* Javascript
+* jQuery
+*  HTML5
+* CSS3
+* Firebase
+* Moment.js
